@@ -311,8 +311,8 @@ void onIdle() {
 	float dt = (time - lastTimeIdle) / 1000.0f;
 
 	if (pressed['e']) red.Move(dt);
-	if (pressed['s']) red.Rotate(dt, 2 * M_PI / 5);
-	if (pressed['f']) red.Rotate(dt, -2 * M_PI / 5);
+	if (pressed['s']) red.Rotate(dt, -2 * M_PI / 5);
+	if (pressed['f']) red.Rotate(dt, 2 * M_PI / 5);
 
 	green.Move(dt);
 	green.Rotate(dt, 2 * M_PI / 3);

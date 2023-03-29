@@ -8,12 +8,12 @@ D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(170,36): warning
 D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(241,1): warning C4305: 'initializing': truncation from 'double' to 'float'
 D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(243,1): warning C4305: 'argument': truncation from 'double' to 'float'
 D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(244,1): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(314,47): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(315,48): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(314,48): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(315,47): warning C4305: 'argument': truncation from 'double' to 'float'
 D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(318,31): warning C4305: 'argument': truncation from 'double' to 'float'
   Generating code
-  17 of 207 functions ( 8.2%) were compiled, the rest were copied from previous compilation.
+  1 of 207 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Skeleton.vcxproj -> D:\git_repos\Hf1Grafika\Programs\Skeleton\bin\Skeleton.exe
