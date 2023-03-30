@@ -1,19 +1,18 @@
 ﻿  Skeleton.cpp
 D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\framework.h(167,17): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(115,82): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(122,82): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(168,21): warning C4018: '<': signed/unsigned mismatch
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(169,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(170,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(241,1): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(243,1): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(244,1): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(314,48): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(315,47): warning C4305: 'argument': truncation from 'double' to 'float'
-D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(318,31): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(124,102): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(126,20): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(179,21): warning C4018: '<': signed/unsigned mismatch
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(180,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(181,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(255,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(256,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(334,48): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(335,47): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\git_repos\Hf1Grafika\Programs\Skeleton\Skeleton\Skeleton.cpp(338,31): warning C4305: 'argument': truncation from 'double' to 'float'
   Generating code
-  1 of 207 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+  4 of 210 functions ( 1.9%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Skeleton.vcxproj -> D:\git_repos\Hf1Grafika\Programs\Skeleton\bin\Skeleton.exe

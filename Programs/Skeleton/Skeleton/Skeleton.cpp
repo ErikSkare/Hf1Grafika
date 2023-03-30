@@ -62,21 +62,34 @@ float dotHyperbolic(const vec3& v1, const vec3& v2) {
 	return v1.x * v2.x + v1.y * v2.y - v1.z * v2.z;
 }
 
+float lengthHyperbolic(const vec3& v) {
+	return sqrtf(dotHyperbolic(v, v));
+}
+
 vec3 normalizeHyperbolic(const vec3& v) {
-	return v / sqrtf(dotHyperbolic(v, v));
+	return v / lengthHyperbolic(v);
+}
+
+vec3 getClosePoint(const vec3& point) {
+	return vec3(point.x, point.y, sqrtf(point.x * point.x + point.y * point.y + 1));
+}
+
+vec3 getCloseVector(const vec3& point, const vec3& vector) {
+	vec3 result = vector + dotHyperbolic(point, vector) * point;
+	return normalizeHyperbolic(result) * lengthHyperbolic(vector);
 }
 
 vec3 perpendicular(const vec3& point, const vec3& vector) {
 	vec3 c = cross(point, vector);
-	return vec3(c.x, c.y, -c.z);
+	return getCloseVector(point, normalizeHyperbolic({c.x, c.y, -c.z}) * lengthHyperbolic(vector));
 }
 
 vec3 lineLocationAfterTime(const vec3& point, const vec3& velocity, float time) {
-	return point * coshf(time) + velocity * sinhf(time);
+	return getClosePoint(point * coshf(time) + velocity * sinhf(time));
 }
 
 vec3 lineVelocityAfterTime(const vec3& point, const vec3& velocity, float time) {
-	return point * sinhf(time) + velocity * coshf(time);
+	return getCloseVector(lineLocationAfterTime(point, velocity, time), point * sinhf(time) + velocity * coshf(time));
 }
 
 float distanceToPoint(const vec3& from, const vec3& to) {
@@ -85,42 +98,40 @@ float distanceToPoint(const vec3& from, const vec3& to) {
 
 vec3 directionToPoint(const vec3& from, const vec3& to) {
 	float distance = distanceToPoint(from, to);
-	return (to - from * coshf(distance)) / sinhf(distance);
+	return getCloseVector(from, (to - from * coshf(distance)) / sinhf(distance));
 }
 
 vec3 pointByDistanceAndDirection(const vec3& point, const vec3& direction, float distance) {
 	vec3 normalizedDirection = normalizeHyperbolic(direction);
-	return lineLocationAfterTime(point, direction, distance);
+	return lineLocationAfterTime(point, normalizedDirection, distance);
 }
 
 vec3 rotate(const vec3& point, const vec3& vector, float angle) {
-	return vector * cosf(angle) + perpendicular(point, vector) * sinf(angle);
-}
-
-vec3 getClosePoint(const vec3& point) {
-	return vec3(point.x, point.y, sqrtf(point.x * point.x + point.y * point.y + 1));
-}
-
-vec3 getCloseVector(const vec3& point, const vec3& vector) {
-	return vector + dotHyperbolic(point, vector) * point;
+	vec3 normalized = normalizeHyperbolic(vector);
+	return lengthHyperbolic(vector) * getCloseVector(point, normalized * cosf(angle) + perpendicular(point, normalized) * sinf(angle));
 }
 
 vec2 project(const vec3& point) {
 	return vec2(point.x / (1 + point.z), point.y / (1 + point.z));
 }
 
-vec2 centerOfCircle(const vec3& point, float radius) {
-	vec3 direction = normalizeHyperbolic(getCloseVector(point, { 1, 0, 0 }));
-	vec3 startPoint = pointByDistanceAndDirection(point, direction, radius);
-	vec3 endPoint = pointByDistanceAndDirection(point, rotate(point, direction, M_PI), radius);
-	return (project(startPoint) + project(endPoint)) / 2;
+vec2 projectedCenterOfCircle(const vec3& point, float radius) {
+	vec3 direction = getCloseVector(point, { 1, 0, 0 });
+	vec2 center = { 0, 0 };
+
+	int iteration = 100;
+	for (int i = 0; i < iteration; ++i) {
+		center = center + project(pointByDistanceAndDirection(point, rotate(point, direction, 2 * M_PI * i / iteration), radius));
+	}
+	center = center / iteration;
+
+	return center;
 }
 
-float radiusOfCircle(const vec3& point, float radius) {
-	vec3 direction = normalizeHyperbolic(getCloseVector(point, { 1, 0, 0 }));
-	vec3 startPoint = pointByDistanceAndDirection(point, direction, radius);
-	vec3 endPoint = pointByDistanceAndDirection(point, rotate(point, direction, M_PI), radius);
-	return length(project(startPoint) - project(endPoint)) / 2;
+float projectedRadiusOfCircle(const vec3& point, float radius) {
+	vec3 direction = getCloseVector(point, { 1, 0, 0 });
+	vec2 center = projectedCenterOfCircle(point, radius);
+	return length(project(pointByDistanceAndDirection(point, direction, radius)) - center);
 }
 
 GPUProgram gpuProgram;
@@ -218,6 +229,8 @@ class Hami {
 	vec3 position;
 	vec3 velocity;
 	Path path;
+	float mouthOffset = 0;
+	float radius = 0.25;
 
 public:
 	Hami(const vec3& color, const vec3& position, const vec3& velocity): color(color), position(position), velocity(velocity) {}
@@ -228,28 +241,36 @@ public:
 	
 	void Move(float dt) {
 		vec3 savedPosition = position;
-		position = getClosePoint(lineLocationAfterTime(savedPosition, velocity, dt));
-		velocity = normalizeHyperbolic(getCloseVector(position, lineVelocityAfterTime(savedPosition, velocity, dt)));
+		position = lineLocationAfterTime(savedPosition, velocity, dt);
+		velocity = lineVelocityAfterTime(savedPosition, velocity, dt);
 		path.AddPoint(project(position));
 	}
 	
 	void Rotate(float dt, float angularSpeed) {
-		velocity = normalizeHyperbolic(getCloseVector(position, rotate(position, velocity, angularSpeed * dt)));
+		velocity = rotate(position, velocity, angularSpeed * dt);
 	}
 
 	void Draw(const vec3& watching) {
-		float radius = 0.3;
-		path.Draw({ 1, 1, 1 });
+		vec3 mouthPosition = pointByDistanceAndDirection(position, velocity, radius + mouthOffset);
 		vec3 eyeOnePosition = pointByDistanceAndDirection(position, rotate(position, velocity, M_PI / 5), radius);
 		vec3 eyeTwoPosition = pointByDistanceAndDirection(position, rotate(position, velocity, -M_PI / 5), radius);
 		vec3 pupilOnePosition = pointByDistanceAndDirection(eyeOnePosition, directionToPoint(position, watching), radius / 5);
 		vec3 pupilTwoPosition = pointByDistanceAndDirection(eyeTwoPosition, directionToPoint(position, watching), radius / 5);
 
-		circle.Draw(color, centerOfCircle(position, radius), radiusOfCircle(position, radius));
-		circle.Draw({ 1, 1, 1 }, centerOfCircle(eyeOnePosition, radius / 4), radiusOfCircle(eyeOnePosition, radius / 4));
-		circle.Draw({ 1, 1, 1 }, centerOfCircle(eyeTwoPosition, radius / 4), radiusOfCircle(eyeTwoPosition, radius / 4));
-		circle.Draw({ 0, 0, 1 }, centerOfCircle(pupilOnePosition, radius / 8), radiusOfCircle(pupilOnePosition, radius / 8));
-		circle.Draw({ 0, 0, 1 }, centerOfCircle(pupilTwoPosition, radius / 8), radiusOfCircle(pupilTwoPosition, radius / 8));
+		circle.Draw(color, projectedCenterOfCircle(position, radius), projectedRadiusOfCircle(position, radius));
+		circle.Draw({ 0, 0, 0 }, projectedCenterOfCircle(mouthPosition, radius / 4), projectedRadiusOfCircle(mouthPosition, radius / 4));
+		circle.Draw({ 1, 1, 1 }, projectedCenterOfCircle(eyeOnePosition, radius / 4), projectedRadiusOfCircle(eyeOnePosition, radius / 4));
+		circle.Draw({ 1, 1, 1 }, projectedCenterOfCircle(eyeTwoPosition, radius / 4), projectedRadiusOfCircle(eyeTwoPosition, radius / 4));
+		circle.Draw({ 0, 0, 1 }, projectedCenterOfCircle(pupilOnePosition, radius / 8), projectedRadiusOfCircle(pupilOnePosition, radius / 8));
+		circle.Draw({ 0, 0, 1 }, projectedCenterOfCircle(pupilTwoPosition, radius / 8), projectedRadiusOfCircle(pupilTwoPosition, radius / 8));
+	}
+
+	void DrawPath() {
+		path.Draw({ 1, 1, 1 });
+	}
+
+	void Hamm(long time) {
+		mouthOffset = (sinf(time / 1000.0f * 2) + 1) * radius / 8;
 	}
 
 	vec3 GetPosition() const {
@@ -266,7 +287,6 @@ Hami green(
 	vec3(1, -1, sqrtf(3)), 
 	normalizeHyperbolic(getCloseVector({1, -1, sqrtf(3)}, {1, 0, 0})));
 bool pressed[256] = { false };
-bool gameOver = false;
 long lastTimeIdle = 0;
 
 void onInitialization() {
@@ -284,6 +304,8 @@ void onDisplay() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	circle.Draw({0, 0, 0});
+	red.DrawPath();
+	green.DrawPath();
 	green.Draw(red.GetPosition());
 	red.Draw(green.GetPosition());
 
@@ -305,8 +327,6 @@ void onMouseMotion(int pX, int pY) {}
 void onMouse(int button, int state, int pX, int pY) {}
 
 void onIdle() {
-	if (gameOver) return;
-
 	long time = glutGet(GLUT_ELAPSED_TIME);
 	float dt = (time - lastTimeIdle) / 1000.0f;
 
@@ -317,8 +337,8 @@ void onIdle() {
 	green.Move(dt);
 	green.Rotate(dt, 2 * M_PI / 3);
 
-	if (distanceToPoint(red.GetPosition(), green.GetPosition()) < 0.4)
-		gameOver = true;
+	red.Hamm(time);
+	green.Hamm(time);
 
 	lastTimeIdle = time;
 	glutPostRedisplay();
